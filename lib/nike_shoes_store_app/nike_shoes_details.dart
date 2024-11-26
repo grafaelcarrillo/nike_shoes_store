@@ -1,105 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes.dart';
-import 'package:nike_shoes_store/nike_shoes_store_app/nike_shopping_cart.dart';
-import 'package:nike_shoes_store/nike_shoes_store_app/shake_transition.dart';
 
 class NikeShoesDetails extends StatelessWidget {
-  NikeShoesDetails({super.key, required this.shoes});
-  final NikeShoes shoes;
+  NikeShoesDetails({super.key});
 
   final ValueNotifier<bool> notifierButtomVisible = ValueNotifier(false);
-
-  Future<void> _openShoppingCart(BuildContext context) async{
-    notifierButtomVisible.value = false;
-    await Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (_, animation1, animation2){
-          return FadeTransition(
-            opacity: animation1, 
-            child: NikeShoppingCart(shoes: shoes),
-          );
-        },
-      ),
-    );
-  notifierButtomVisible.value = true;
-  }
-
-  Widget _buildCarousel(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return SizedBox(
-                  height: size.height * 0.5,
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: Hero(
-                          tag: 'background_${shoes.model}',
-                          child: Container(
-                            color: Color(shoes.color),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 70,
-                        right: 70,
-                        top: 10,
-                        child: Hero(
-                          tag: 'number_${shoes.model}',
-                          child: ShakeTransition(
-                            axis: Axis.vertical,
-                            duration: const Duration(milliseconds: 1400),
-                            offset: 15,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: FittedBox(
-                                child: Text(
-                                  shoes.modelNumber.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.05),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      PageView.builder(itemCount: shoes.images.length, itemBuilder: (context, index){
-                        final tag = index == 0 ? 'image_${shoes.model}' : 'image_${shoes.model}_$index';
-                        return Container(
-                          alignment: Alignment.center,
-                          child: ShakeTransition(
-                            axis: Axis.vertical,
-                            duration: const Duration(milliseconds: 1400),
-                            offset: 10,
-                            child: Hero(
-                              tag: tag,
-                              child: Image.asset(shoes.images[index], height: 200, width: 200,)
-                            ),
-                          ),
-                        );
-                      }
-                      ),
-                    ],
-                  ),
-                );
-  }
   @override
   Widget build(BuildContext context) {
+    // Método principal para construir la interfaz de usuario.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Callback que se ejecuta después de que el cuadro de la pantalla se renderiza completamente.
       notifierButtomVisible.value = true;
+      // Cambia el valor del `ValueNotifier` a `true` para mostrar los botones flotantes.
     });
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Image.asset('assets/nike_shoes_store/nike_logo.png', height: 40,),
-        leading: const BackButton(color: Colors.black,),
-      ),
+      appBar: AppBar(),
       body: Stack(
-        fit: StackFit.expand,
         children: <Widget>[
           Positioned.fill(
             child: Column(
@@ -183,52 +98,61 @@ class NikeShoesDetails extends StatelessWidget {
             ),
           ),
           ValueListenableBuilder<bool>(
+            // Widget que escucha cambios en `notifierButtomVisible` y reconstruye su contenido en consecuencia.
             valueListenable: notifierButtomVisible,
             builder: (context, value, child) {
               return AnimatedPositioned(
-                duration: const Duration(milliseconds: 250),
+                duration: const Duration(milliseconds: 600),
                 left: 0,
                 right: 0,
-                bottom: value ? 0.0 : -kToolbarHeight * 1.5,
+                bottom: value ? 0.0 : -kToolbarHeight,
                 child: Padding(
+                  // Padding alrededor de los botones flotantes.
                   padding: const EdgeInsets.all(15.0),
                   child: Row(
-                    children: <Widget> [
+                    // Contenedor que organiza los botones en fila.
+                    children: <Widget>[
                       FloatingActionButton(
+                        // Primer botón flotante (favoritos).
                         heroTag: 'fav_1',
+                        // Etiqueta única para evitar conflictos en la animación.
+
                         backgroundColor: Colors.white,
-                        child: const Icon(Icons.favorite, color: Colors.black,),
-                        onPressed: () {}
-                      ),
-                      const Spacer(),
-                      FloatingActionButton(
-                        heroTag: 'fav_2',
-                        backgroundColor: Colors.black,
-                        child: const Icon(Icons.shopping_cart_outlined),
+                        // Color de fondo del botón.
+
+                        child: const Icon(
+                          Icons.favorite,
+                          color: Colors.black,
+                        ),
+                        // Ícono de corazón que representa la acción de añadir a favoritos.
+
                         onPressed: () {
-                          _openShoppingCart(context);
-                        }
+                          // Acción que se ejecuta cuando el botón es presionado.
+                        },
+                      ),
+
+                      const Spacer(),
+                      // Añade espacio flexible entre los dos botones.
+
+                      FloatingActionButton(
+                        // Segundo botón flotante (carrito de compras).
+                        heroTag: 'fav_2',
+                        // Etiqueta única para evitar conflictos en la animación.
+
+                        backgroundColor: Colors.black,
+                        // Color de fondo del botón.
+
+                        child: const Icon(Icons.shopping_cart_outlined),
+                        onPressed: () {}
                       ),
                     ],
                   ),
                 ),
               );
-            }
+            },
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ShoesSizeItem extends StatelessWidget {
-  const _ShoesSizeItem({super.key, required this.text});
-  final String text;
-  @override
-  Widget build(BuildContext context) {
-    return  Padding(
-      padding: const EdgeInsets.all(5),
-      child: Text('US $text', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11,),),
     );
   }
 }
