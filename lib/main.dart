@@ -1,98 +1,73 @@
-import 'package:flutter/material.dart';
-// Importación de las bibliotecas necesarias para la interfaz gráfica en Flutter.
+// Importa las dependencias necesarias para el proyecto.
+import 'package:flutter/material.dart'; // Librería principal de Flutter para diseño y widgets.
+import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes.dart'; // Archivo que contiene la definición del modelo de los zapatos.
+import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes_details.dart'; // Archivo que contiene la vista de detalles de los zapatos.
 
-import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes.dart';
-import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes_details.dart';
-// Importación de módulos personalizados relacionados con la tienda de zapatos Nike.
+// Define la función principal que inicia la aplicación.
+void main() => runApp(const MyApp()); // Llama a la clase `MyApp` como la raíz de la aplicación.
 
-void main() => runApp(const MyApp());
-// Punto de entrada principal de la aplicación. `runApp` inicia la aplicación con el widget raíz `MyApp`.
-
+// Define la clase principal de la aplicación, que extiende de StatelessWidget.
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // Clase principal que representa la aplicación. Es un widget sin estado (StatelessWidget).
+  const MyApp({super.key}); // Constructor para definir la clave única del widget.
 
   @override
   Widget build(BuildContext context) {
-    // Método `build` que define la estructura visual de la aplicación.
+    // Devuelve la estructura principal de la aplicación.
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // Elimina el banner de "debug" en la esquina superior derecha.
-
-      theme: ThemeData.light(),
-      // Define el tema de la aplicación como claro.
-
-      home: NikeShoesStoreHome(),
-      // Define el widget inicial como `NikeShoesStoreHome`.
+      debugShowCheckedModeBanner: false, // Oculta la marca de depuración.
+      theme: ThemeData.light(), // Usa el tema claro de Material Design.
+      home: NikeShoesStoreHome(), // Establece la pantalla principal de la aplicación.
     );
-  }
+  }  
 }
 
+// Clase principal para la página inicial de la tienda.
 class NikeShoesStoreHome extends StatelessWidget {
-  NikeShoesStoreHome({super.key});
-  // Widget principal que representa la pantalla de inicio de la tienda de zapatos.
+  NikeShoesStoreHome({super.key}); // Constructor.
 
+  // Define un ValueNotifier para manejar la visibilidad de la barra inferior.
   final ValueNotifier<bool> notifierBottomBarVisible = ValueNotifier(true);
-  // `ValueNotifier` se utiliza para notificar cambios en la visibilidad de la barra inferior.
 
+  // Método que se ejecuta cuando se selecciona un zapato.
   void _onShoesPressed(NikeShoes shoes, BuildContext context) async {
-    // Método que se ejecuta al seleccionar un zapato de la lista.
-    notifierBottomBarVisible.value = false;
-    // Oculta la barra inferior al navegar a otra pantalla.
-
-    await Navigator.of(context).push(PageRouteBuilder(
-      // Navega a la página de detalles del zapato con una transición de desvanecimiento.
-      pageBuilder: (context, animation1, animation2) {
-        return FadeTransition(
-          opacity: animation1,
-          child: NikeShoesDetails(),
-        );
-      },
-    ));
-
-    notifierBottomBarVisible.value = true;
-    // Restaura la visibilidad de la barra inferior al regresar.
+    notifierBottomBarVisible.value = false; // Oculta la barra inferior.
+    await Navigator.of(context).push( // Navega hacia la pantalla de detalles con una transición.
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) {
+          return FadeTransition(
+            opacity: animation1, // Aplica un efecto de transición de desvanecimiento.
+            child: NikeShoesDetails(shoes: shoes), // Muestra la página de detalles.
+          );
+        },
+      ),
+    );
+    notifierBottomBarVisible.value = true; // Vuelve a mostrar la barra inferior.
   }
 
   @override
   Widget build(BuildContext context) {
-    // Método `build` que define la interfaz de esta pantalla.
+    // Devuelve la estructura visual principal.
     return Scaffold(
-      backgroundColor: Colors.white,
-      // Color de fondo de la pantalla.
-
+      backgroundColor: Colors.white, // Establece el fondo blanco.
       body: Stack(
-        // `Stack` permite superponer widgets.
         children: <Widget>[
+          // Contenedor principal con un logo y lista de zapatos.
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20.0),
-            // Espaciado alrededor del contenido principal.
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              // Alinea los elementos horizontalmente para llenar todo el ancho.
+              crossAxisAlignment: CrossAxisAlignment.stretch, // Alinea los elementos en la columna.
               children: <Widget>[
-                Image.asset('assets/nike_shoes_store/nike_logo.png', height: 40),
-                // Muestra el logo de Nike.
-
+                Image.asset('assets/nike_shoes_store/nike_logo.png', height: 40), // Muestra el logo de Nike.
                 Expanded(
                   child: ListView.builder(
-                    // Crea una lista desplazable de zapatos.
-                    itemCount: shoes.length,
-                    // Número de elementos en la lista.
-
-                    padding: const EdgeInsets.only(bottom: 20),
-                    // Margen inferior para evitar que los elementos queden muy pegados al borde.
-
+                    itemCount: shoes.length, // Número de elementos en la lista.
+                    padding: const EdgeInsets.only(bottom: 20), // Espaciado inferior.
                     itemBuilder: (context, index) {
-                      final shoesItem = shoes[index];
-                      // Recupera un zapato individual de la lista.
-
+                      final shoesItem = shoes[index]; // Obtiene un zapato de la lista.
                       return NikeShoesItem(
-                        // Crea un widget personalizado para cada zapato.
-                        shoesItem: shoesItem,
+                        shoesItem: shoesItem, 
                         onTap: () {
-                          _onShoesPressed(shoesItem, context);
-                          // Maneja la acción al tocar un zapato.
+                          _onShoesPressed(shoesItem, context); // Navega a los detalles del zapato.
                         },
                       );
                     },
@@ -101,41 +76,29 @@ class NikeShoesStoreHome extends StatelessWidget {
               ],
             ),
           ),
-
+          // Barra inferior animada.
           ValueListenableBuilder<bool>(
-            // Escucha cambios en la visibilidad de la barra inferior.
-            valueListenable: notifierBottomBarVisible,
+            valueListenable: notifierBottomBarVisible, // Escucha cambios en la visibilidad.
             builder: (context, value, child) {
               return AnimatedPositioned(
-                // Anima la posición de la barra inferior.
-                duration: const Duration(milliseconds: 600),
+                duration: const Duration(milliseconds: 600), // Duración de la animación.
                 left: 0,
                 right: 0,
-                bottom: value ? 0.0 : -kToolbarHeight,
-                height: kToolbarHeight,
+                bottom: value ? 0.0 : -kToolbarHeight, // Posiciona la barra según su visibilidad.
+                height: kToolbarHeight, // Altura estándar de la barra.
                 child: Container(
-                  // Barra inferior con iconos de navegación.
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withOpacity(0.7), // Fondo semi-transparente.
                   child: const Row(
-                    // Distribuye los iconos en la barra inferior.
                     children: <Widget>[
-                      Expanded(
-                        child: Icon(Icons.home),
-                      ),
-                      Expanded(
-                        child: Icon(Icons.search),
-                      ),
-                      Expanded(
-                        child: Icon(Icons.favorite_border),
-                      ),
-                      Expanded(
-                        child: Icon(Icons.shopping_cart_outlined),
-                      ),
+                      Expanded(child: Icon(Icons.home)), // Icono de inicio.
+                      Expanded(child: Icon(Icons.search)), // Icono de búsqueda.
+                      Expanded(child: Icon(Icons.favorite_border)), // Icono de favoritos.
+                      Expanded(child: Icon(Icons.shopping_cart_outlined)), // Icono de carrito.
                       Expanded(
                         child: Center(
                           child: CircleAvatar(
-                            radius: 13,
-                            backgroundImage: AssetImage('assets/nike_shoes_store/icon_person.jpg'),
+                            radius: 13, // Tamaño del avatar.
+                            backgroundImage: AssetImage('assets/nike_shoes_store/icon_person.jpg'), // Imagen del avatar.
                           ),
                         ),
                       ),
@@ -151,102 +114,106 @@ class NikeShoesStoreHome extends StatelessWidget {
   }
 }
 
+// Widget para mostrar cada zapato en la lista.
 class NikeShoesItem extends StatelessWidget {
-  // Widget que representa cada elemento individual de zapato.
-  const NikeShoesItem({super.key, required this.shoesItem, required this.onTap});
-
-  final NikeShoes shoesItem;
-  // Objeto que contiene la información del zapato.
-
-  final VoidCallback onTap;
-  // Función que se ejecuta al tocar este elemento.
+  const NikeShoesItem({super.key, required this.shoesItem, required this.onTap}); // Constructor.
+  final NikeShoes shoesItem; // Información del zapato.
+  final VoidCallback onTap; // Acción al hacer clic.
 
   @override
   Widget build(BuildContext context) {
-    const itemHeight = 290.0;
-    // Altura predefinida para los elementos.
-
+    const itemHeight = 290.0; // Altura de cada tarjeta.
     return InkWell(
-      // Widget táctil para manejar interacciones.
-      onTap: onTap,
+      onTap: onTap, // Acción al presionar la tarjeta.
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        padding: const EdgeInsets.symmetric(vertical: 15.0), // Margen vertical.
         child: SizedBox(
-          height: 160,
+          height: 160, // Altura del contenedor.
           child: Stack(
-            fit: StackFit.expand,
+            fit: StackFit.expand, // Acomoda los elementos dentro del espacio disponible.
             children: <Widget>[
+              // Fondo con color dinámico basado en el modelo.
               Positioned.fill(
-                // Fondo del elemento con un color específico.
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Color(shoesItem.color),
+                child: Hero(
+                  tag: 'background_${shoesItem.model}', // Etiqueta única para animaciones.
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0), // Bordes redondeados.
+                      color: Color(shoesItem.color), // Color dinámico del fondo.
+                    ),
                   ),
                 ),
               ),
+              // Número del modelo en el fondo.
               Align(
-                // Texto del número de modelo en el fondo.
                 alignment: Alignment.topCenter,
-                child: SizedBox(
-                  height: itemHeight * 0.6,
-                  child: FittedBox(
-                    child: Text(
-                      shoesItem.modelNumber.toString(),
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.05),
-                        fontWeight: FontWeight.bold,
+                child: Hero(
+                  tag: 'number_${shoesItem.model}',
+                  child: SizedBox(
+                    height: itemHeight * 0.6,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: FittedBox(
+                        child: Text(
+                          shoesItem.modelNumber.toString(), // Número del modelo.
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(0.05), // Color tenue.
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
+              // Imagen del zapato.
               Positioned(
                 top: 20,
                 left: 100,
                 height: itemHeight * 0.65,
-                child: Image.asset(
-                  shoesItem.images.first,
-                  // Imagen del zapato.
-                  fit: BoxFit.contain,
+                child: Hero(
+                  tag: 'image_${shoesItem.model}',
+                  child: Image.asset(
+                    shoesItem.images.first, // Primera imagen del zapato.
+                    fit: BoxFit.contain, // Ajusta la imagen al contenedor.
+                  ),
                 ),
               ),
+              // Iconos interactivos.
               const Positioned(
-                // Icono de favorito.
                 bottom: 20,
                 left: 20,
-                child: Icon(Icons.favorite_border, color: Colors.grey),
+                child: Icon(Icons.favorite_border, color: Colors.grey), // Icono de favoritos.
               ),
               const Positioned(
-                // Icono de carrito.
                 bottom: 20,
                 right: 20,
-                child: Icon(Icons.shopping_cart_outlined, color: Colors.grey),
+                child: Icon(Icons.shopping_cart_outlined, color: Colors.grey), // Icono de carrito.
               ),
+              // Información del zapato (modelo y precio).
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 25,
                 child: Column(
-                  // Información del zapato: modelo, precio antiguo y precio actual.
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      shoesItem.model,
+                      shoesItem.model, // Nombre del modelo.
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '\$${shoesItem.oldPrice.toInt().toString()}',
+                      '\$${shoesItem.oldPrice.toInt().toString()}', // Precio anterior.
                       style: const TextStyle(
                         color: Colors.red,
-                        decoration: TextDecoration.lineThrough,
+                        decoration: TextDecoration.lineThrough, // Subraya el precio como tachado.
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '\$${shoesItem.currentPrice.toInt().toString()}',
+                      '\$${shoesItem.currentPrice.toInt().toString()}', // Precio actual.
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,

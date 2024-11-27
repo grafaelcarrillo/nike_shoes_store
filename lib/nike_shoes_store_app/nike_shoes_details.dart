@@ -1,85 +1,254 @@
+// Importa las dependencias necesarias.
 import 'package:flutter/material.dart';
-// Importación del paquete principal de Flutter para crear la interfaz gráfica.
+import 'package:nike_shoes_store/nike_shoes_store_app/nike_shoes.dart';
+import 'package:nike_shoes_store/nike_shoes_store_app/nike_shopping_cart.dart';
+import 'package:nike_shoes_store/nike_shoes_store_app/shake_transition.dart';
 
+// Widget que representa la pantalla de detalles de los zapatos.
 class NikeShoesDetails extends StatelessWidget {
-  // Clase que representa la pantalla de detalles de un zapato Nike.
-  NikeShoesDetails({super.key});
+  // Constructor que recibe un objeto NikeShoes para mostrar sus detalles.
+  NikeShoesDetails({super.key, required this.shoes});
 
+  // Objeto de tipo NikeShoes que contiene la información del producto.
+  final NikeShoes shoes;
+
+  // Notificador que controla la visibilidad de los botones flotantes.
   final ValueNotifier<bool> notifierButtomVisible = ValueNotifier(false);
-  // `ValueNotifier` para controlar la visibilidad del botón flotante inferior.
 
+  // Método para abrir el carrito de compras. Navega hacia la pantalla de carrito
+  // con una transición y oculta temporalmente los botones flotantes.
+  Future<void> _openShoppingCart(BuildContext context) async {
+    notifierButtomVisible.value = false;
+    await Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false, // Permite que el fondo de la pantalla actual sea visible.
+        pageBuilder: (_, animation1, animation2) {
+          return FadeTransition(
+            opacity: animation1, // Aplica un efecto de desvanecimiento.
+            child: NikeShoppingCart(shoes: shoes), // Muestra la pantalla del carrito.
+          );
+        },
+      ),
+    );
+    notifierButtomVisible.value = true; // Restaura la visibilidad de los botones flotantes.
+  }
+
+  // Método para construir el carrusel de imágenes de los zapatos.
+  Widget _buildCarousel(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Obtiene el tamaño de la pantalla.
+    return SizedBox(
+      height: size.height * 0.5, // Define la altura del carrusel.
+      child: Stack(
+        children: <Widget>[
+          // Fondo con un color correspondiente al zapato.
+          Positioned.fill(
+            child: Hero(
+              tag: 'background_${shoes.model}', // Efecto Hero para la animación entre pantallas.
+              child: Container(
+                color: Color(shoes.color),
+              ),
+            ),
+          ),
+          // Texto del número de modelo.
+          Positioned(
+            left: 70,
+            right: 70,
+            top: 10,
+            child: Hero(
+              tag: 'number_${shoes.model}', // Efecto Hero para el texto del modelo.
+              child: ShakeTransition(
+                axis: Axis.vertical,
+                duration: const Duration(milliseconds: 1400),
+                offset: 15,
+                child: Material(
+                  color: Colors.transparent,
+                  child: FittedBox(
+                    child: Text(
+                      shoes.modelNumber.toString(),
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.05),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Carrusel de imágenes de los zapatos.
+          PageView.builder(
+            itemCount: shoes.images.length, // Número de imágenes en el carrusel.
+            itemBuilder: (context, index) {
+              final tag = index == 0
+                  ? 'image_${shoes.model}' // La primera imagen utiliza el tag principal.
+                  : 'image_${shoes.model}_$index'; // Otras imágenes tienen tags únicos.
+              return Container(
+                alignment: Alignment.center,
+                child: ShakeTransition(
+                  axis: Axis.vertical,
+                  duration: const Duration(milliseconds: 1400),
+                  offset: 10,
+                  child: Hero(
+                    tag: tag,
+                    child: Image.asset(
+                      shoes.images[index], // Muestra la imagen correspondiente.
+                      height: 200,
+                      width: 200,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Método principal de construcción del widget.
   @override
   Widget build(BuildContext context) {
-    // Método principal para construir la interfaz de usuario.
+    // Configura la visibilidad de los botones flotantes después de cargar la pantalla.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Callback que se ejecuta después de que el cuadro de la pantalla se renderiza completamente.
       notifierButtomVisible.value = true;
-      // Cambia el valor del `ValueNotifier` a `true` para mostrar los botones flotantes.
     });
 
-    return Scaffold(
-      // Estructura básica de la pantalla.
-      appBar: AppBar(),
-      // Barra superior de la pantalla (puede incluir un título u otras acciones).
+    // ignore: unused_local_variable
+    final size = MediaQuery.of(context).size; // Obtiene el tamaño de la pantalla.
 
+    return Scaffold(
+      // AppBar con el logo de Nike y un botón para regresar.
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Image.asset(
+          'assets/nike_shoes_store/nike_logo.png',
+          height: 40,
+        ),
+        leading: const BackButton(color: Colors.black),
+      ),
       body: Stack(
-        // `Stack` permite superponer widgets en el área de contenido.
+        fit: StackFit.expand,
         children: <Widget>[
+          // Contenido principal de la pantalla.
+          Positioned.fill(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _buildCarousel(context), // Carrusel de imágenes.
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Información del modelo y precios.
+                      ShakeTransition(
+                        duration: const Duration(milliseconds: 1400),
+                        offset: 20,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              shoes.model,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const Spacer(),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  // Precio anterior.
+                                  Text(
+                                    '\$${shoes.oldPrice.toInt().toString()}',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      decoration: TextDecoration.lineThrough,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  // Precio actual.
+                                  Text(
+                                    '\$${shoes.currentPrice.toInt().toString()}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Tallas disponibles.
+                      const ShakeTransition(
+                        duration: Duration(milliseconds: 1400),
+                        offset: 20,
+                        child: Text(
+                          'AVAILABLE SIZES',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Filas de tallas.
+                      const ShakeTransition(
+                        duration: Duration(milliseconds: 1400),
+                        offset: 20,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            _ShoesSizeItem(text: '6'),
+                            _ShoesSizeItem(text: '7'),
+                            _ShoesSizeItem(text: '9'),
+                            _ShoesSizeItem(text: '10'),
+                            _ShoesSizeItem(text: '11'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Descripción.
+                      const Text(
+                        'DESCRIPTION',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Botones flotantes para favoritos y carrito.
           ValueListenableBuilder<bool>(
-            // Widget que escucha cambios en `notifierButtomVisible` y reconstruye su contenido en consecuencia.
             valueListenable: notifierButtomVisible,
             builder: (context, value, child) {
               return AnimatedPositioned(
-                // Widget que anima la posición de los botones flotantes en la parte inferior.
-                duration: const Duration(milliseconds: 600),
-                // Duración de la animación.
-
+                duration: const Duration(milliseconds: 250),
                 left: 0,
                 right: 0,
-                bottom: value ? 0.0 : -kToolbarHeight,
-                // Mueve los botones hacia arriba o fuera de la pantalla dependiendo del valor de `value`.
-
+                bottom: value ? 0.0 : -kToolbarHeight * 1.5,
                 child: Padding(
-                  // Padding alrededor de los botones flotantes.
                   padding: const EdgeInsets.all(15.0),
                   child: Row(
-                    // Contenedor que organiza los botones en fila.
                     children: <Widget>[
                       FloatingActionButton(
-                        // Primer botón flotante (favoritos).
                         heroTag: 'fav_1',
-                        // Etiqueta única para evitar conflictos en la animación.
-
                         backgroundColor: Colors.white,
-                        // Color de fondo del botón.
-
-                        child: const Icon(
-                          Icons.favorite,
-                          color: Colors.black,
-                        ),
-                        // Ícono de corazón que representa la acción de añadir a favoritos.
-
-                        onPressed: () {
-                          // Acción que se ejecuta cuando el botón es presionado.
-                        },
+                        child: const Icon(Icons.favorite, color: Colors.black),
+                        onPressed: () {}, // Acción del botón de favoritos.
                       ),
-
                       const Spacer(),
-                      // Añade espacio flexible entre los dos botones.
-
                       FloatingActionButton(
-                        // Segundo botón flotante (carrito de compras).
                         heroTag: 'fav_2',
-                        // Etiqueta única para evitar conflictos en la animación.
-
                         backgroundColor: Colors.black,
-                        // Color de fondo del botón.
-
                         child: const Icon(Icons.shopping_cart_outlined),
-                        // Ícono de carrito de compras que representa la acción de añadir al carrito.
-
                         onPressed: () {
-                          // Acción que se ejecuta cuando el botón es presionado.
+                          _openShoppingCart(context); // Abre el carrito.
                         },
                       ),
                     ],
@@ -89,6 +258,26 @@ class NikeShoesDetails extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Widget auxiliar para mostrar las tallas disponibles.
+class _ShoesSizeItem extends StatelessWidget {
+  const _ShoesSizeItem({super.key, required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Text(
+        'US $text',
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+        ),
       ),
     );
   }
