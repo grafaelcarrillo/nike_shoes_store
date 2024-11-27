@@ -30,6 +30,7 @@ class NikeShoesStoreHome extends StatelessWidget {
 
   // Método que se ejecuta cuando se selecciona un zapato.
   void _onShoesPressed(NikeShoes shoes, BuildContext context) async {
+<<<<<<< HEAD
     notifierBottomBarVisible.value = false; // Oculta la barra inferior.
     await Navigator.of(context).push( // Navega hacia la pantalla de detalles con una transición.
       PageRouteBuilder(
@@ -42,6 +43,20 @@ class NikeShoesStoreHome extends StatelessWidget {
       ),
     );
     notifierBottomBarVisible.value = true; // Vuelve a mostrar la barra inferior.
+=======
+    // Método que se ejecuta al seleccionar un zapato de la lista.
+    notifierBottomBarVisible.value = false;
+    await Navigator.of(context).push(PageRouteBuilder(pageBuilder: (context, animation1, animation2){
+      return FadeTransition(
+        opacity: animation1,
+        child: NikeShoesDetails(),
+        );
+      },
+    ));
+
+    notifierBottomBarVisible.value = true;
+    // Restaura la visibilidad de la barra inferior al regresar.
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
   }
 
   @override
@@ -95,12 +110,16 @@ class NikeShoesStoreHome extends StatelessWidget {
                       Expanded(child: Icon(Icons.favorite_border)), // Icono de favoritos.
                       Expanded(child: Icon(Icons.shopping_cart_outlined)), // Icono de carrito.
                       Expanded(
+<<<<<<< HEAD
                         child: Center(
                           child: CircleAvatar(
                             radius: 13, // Tamaño del avatar.
                             backgroundImage: AssetImage('assets/nike_shoes_store/icon_person.jpg'), // Imagen del avatar.
                           ),
                         ),
+=======
+                        child: Center(child: CircleAvatar(radius: 13, backgroundImage: AssetImage('assets/icon_person.png'),)),
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
                       ),
                     ],
                   ),
@@ -134,6 +153,7 @@ class NikeShoesItem extends StatelessWidget {
             children: <Widget>[
               // Fondo con color dinámico basado en el modelo.
               Positioned.fill(
+<<<<<<< HEAD
                 child: Hero(
                   tag: 'background_${shoesItem.model}', // Etiqueta única para animaciones.
                   child: Container(
@@ -142,11 +162,16 @@ class NikeShoesItem extends StatelessWidget {
                       color: Color(shoesItem.color), // Color dinámico del fondo.
                     ),
                   ),
+=======
+                child: Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0), color: Color(shoesItem.color),),
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
                 ),
               ),
               // Número del modelo en el fondo.
               Align(
                 alignment: Alignment.topCenter,
+<<<<<<< HEAD
                 child: Hero(
                   tag: 'number_${shoesItem.model}',
                   child: SizedBox(
@@ -163,6 +188,12 @@ class NikeShoesItem extends StatelessWidget {
                         ),
                       ),
                     ),
+=======
+                child: SizedBox(
+                  height: itemHeight * 0.6,
+                  child: FittedBox(
+                    child: Text(shoesItem.modelNumber.toString(), style: TextStyle(color: Colors.black.withOpacity(0.05), fontWeight: FontWeight.bold,),),
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
                   ),
                 ),
               ),
@@ -171,12 +202,18 @@ class NikeShoesItem extends StatelessWidget {
                 top: 20,
                 left: 100,
                 height: itemHeight * 0.65,
+<<<<<<< HEAD
                 child: Hero(
                   tag: 'image_${shoesItem.model}',
                   child: Image.asset(
                     shoesItem.images.first, // Primera imagen del zapato.
                     fit: BoxFit.contain, // Ajusta la imagen al contenedor.
                   ),
+=======
+                child: Image.asset(
+                  shoesItem.images.first,  
+                  fit: BoxFit.contain,
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
                 ),
               ),
               // Iconos interactivos.

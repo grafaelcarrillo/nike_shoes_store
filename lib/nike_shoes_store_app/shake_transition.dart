@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+<<<<<<< HEAD
 /// Un widget personalizado que aplica una transición de "sacudida" a su hijo.
 /// Este efecto de animación utiliza un desplazamiento gradual que se suaviza al final.
 class ShakeTransition extends StatelessWidget {
@@ -15,10 +16,26 @@ class ShakeTransition extends StatelessWidget {
   final Duration duration; // Tiempo que toma completar la animación
   final double offset; // Magnitud del desplazamiento en el eje especificado
   final Axis axis; // Eje de la sacudida (por defecto, horizontal)
+=======
+class ShakeTransition extends StatelessWidget {
+  const ShakeTransition({
+    super.key,
+    required this.duration,
+    required this.offset,
+    this.axis = Axis.horizontal,
+    required this.child,
+  });
+
+  final Widget child;
+  final Duration duration;
+  final double offset;
+  final Axis axis;
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
 
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder(
+<<<<<<< HEAD
       // El widget hijo que será animado
       child: child,
       // Duración total de la animación
@@ -37,8 +54,24 @@ class ShakeTransition extends StatelessWidget {
               ? Offset(value * offset, 0.0) // Desplazamiento horizontal
               : Offset(0.0, value * offset), // Desplazamiento vertical
           child: child, // El widget animado
+=======
+      child: child,
+      duration: duration,
+      curve: Curves.elasticOut,
+      tween: Tween(begin: 1.0, end: 0.0),
+      builder: (context, value, child){
+        return Transform.translate(
+          offset: axis == Axis.horizontal
+          ? Offset(value * offset, 0.0)
+          : Offset(0.0, value * offset),
+          child: child,
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
         );
       },
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> df405fd994fd1d65ad0aa424351df330944fecca
