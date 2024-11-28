@@ -79,7 +79,7 @@ final shoes = <NikeShoes>[
     images: [
       'assets/nike_shoes_store/shoes3_1.png',
       'assets/nike_shoes_store/shoes3_2.png',
-      'assets/nike_shoes_store/shoes3_3.png',
+      'assets/nike_shoes_store/shoes3_3.png', 
     ], 
     modelNumber: 95, 
     color: 0xFFFEEFEF,

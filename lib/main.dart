@@ -61,7 +61,7 @@ class NikeShoesStoreHome extends StatelessWidget {
                 Expanded(
                   child: ListView.builder(
                     itemCount: shoes.length, // Número de elementos en la lista.
-                    padding: const EdgeInsets.only(bottom: 20), // Espaciado inferior.
+                    padding: const EdgeInsets.only(bottom: 40), // Espaciado inferior.
                     itemBuilder: (context, index) {
                       final shoesItem = shoes[index]; // Obtiene un zapato de la lista.
                       return NikeShoesItem(
@@ -122,13 +122,13 @@ class NikeShoesItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const itemHeight = 290.0; // Altura de cada tarjeta.
+    const itemHeight = 200.0; // Altura de cada tarjeta.
     return InkWell(
       onTap: onTap, // Acción al presionar la tarjeta.
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0), // Margen vertical.
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0), // Margen vertical.
         child: SizedBox(
-          height: 160, // Altura del contenedor.
+          height: 200, // Altura del contenedor.
           child: Stack(
             fit: StackFit.expand, // Acomoda los elementos dentro del espacio disponible.
             children: <Widget>[
@@ -150,7 +150,7 @@ class NikeShoesItem extends StatelessWidget {
                 child: Hero(
                   tag: 'number_${shoesItem.model}',
                   child: SizedBox(
-                    height: itemHeight * 0.6,
+                    height: itemHeight * 0.8,
                     child: Material(
                       color: Colors.transparent,
                       child: FittedBox(

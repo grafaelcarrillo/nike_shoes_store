@@ -42,14 +42,14 @@ class _NikeShoppingCartState extends State<NikeShoppingCart>
     _animationResize = Tween(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.2), // Ocurre en el 0%-20% de la animación
+        curve: const Interval(0.0, 0.3), // Ocurre en el 0%-30% de la animación
       ),
     );
 
     _animationMovementIn = Tween(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.355, 0.6, curve: Curves.fastLinearToSlowEaseIn),
+        curve: const Interval(0.3, 0.6, curve: Curves.fastLinearToSlowEaseIn),
       ),
     );
 
@@ -92,14 +92,14 @@ class _NikeShoppingCartState extends State<NikeShoppingCart>
       builder: (context, value, child) {
         return Transform.translate(
           // Mueve el panel en el eje Y según el progreso de la animación
-          offset: Offset(0.0, value * size.height * 0.7),
+          offset: Offset(0.0, value * size.height * 0.6),
           child: child,
         );
       },
       child: Container(
         // Ajusta el tamaño del panel según la animación de redimensionamiento
-        height: (size.height * 0.7 * _animationResize.value)
-            .clamp(_buttonCircularSize, size.height * 0.7),
+        height: (size.height * 0.6 * _animationResize.value)
+            .clamp(_buttonCircularSize, size.height * 0.6),
         width: (size.width * _animationResize.value)
             .clamp(_buttonCircularSize, size.width),
         decoration: BoxDecoration(
@@ -145,7 +145,7 @@ class _NikeShoppingCartState extends State<NikeShoppingCart>
                         ),
                         // Texto que muestra el precio del zapato
                         Text(
-                          '\$${widget.shoes.currentPrice.toInt().toString()}',
+                          '\$${widget.shoes.currentPrice.toString()}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -199,7 +199,7 @@ class _NikeShoppingCartState extends State<NikeShoppingCart>
                     if (_animationMovementIn.value != 1.0)
                       // Panel inferior que contiene la información del zapato
                       Positioned(
-                        top: size.height * 0.3 +
+                        top: size.height * 0.4 +
                             (_animationMovementIn.value * size.height * 0.45),
                         left: size.width / 2 - panelSizeWidth / 2,
                         width: panelSizeWidth,
@@ -217,7 +217,7 @@ class _NikeShoppingCartState extends State<NikeShoppingCart>
                         builder: (context, value, child) {
                           return Transform.translate(
                             // Mueve el botón verticalmente durante la animación
-                            offset: Offset(0.0, value * size.height * 0.7),
+                            offset: Offset(0.0, value * size.height * 0.6),
                             child: child,
                           );
                         },
